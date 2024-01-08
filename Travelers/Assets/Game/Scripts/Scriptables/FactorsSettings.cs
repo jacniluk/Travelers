@@ -8,4 +8,14 @@ public class FactorsSettings : ScriptableObject
     [SerializeField] private float maxSpeed;
     [SerializeField] private float minTurnSpeed;
     [SerializeField] private float maxTurnSpeed;
+
+    public float DrawRandomSpeed()
+    {
+        return Utilities.RandomValue(minSpeed, maxSpeed);
+    }
+
+	public float DrawRandomTurnSpeed()
+	{
+		return Utilities.RandomValue(minTurnSpeed, maxTurnSpeed);
+	}
 }

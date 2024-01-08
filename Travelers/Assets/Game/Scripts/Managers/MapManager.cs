@@ -13,7 +13,7 @@ public class MapManager : MonoBehaviour, IInitializable
 	[SerializeField] private Transform mapRoot;
 	[SerializeField] private Transform ground;
 
-	[Header("Prefabs")]
+	[Header("Assets")]
 	[SerializeField] private AssetReferenceGameObject obstacleAddressable;
 
 	public static MapManager Instance;

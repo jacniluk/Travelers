@@ -17,5 +17,6 @@ public class GameManager : MonoBehaviour
 	private void InitializeGame()
 	{
 		MapManager.Instance.Initialize();
+		TravelersManager.Instance.Initialize();
 	}
 }
