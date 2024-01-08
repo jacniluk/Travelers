@@ -8,4 +8,14 @@ public class GameManager : MonoBehaviour
 	{
 		Instance = this;
 	}
+
+	private void Start()
+	{
+		InitializeGame();
+	}
+
+	private void InitializeGame()
+	{
+		MapManager.Instance.Initialize();
+	}
 }
