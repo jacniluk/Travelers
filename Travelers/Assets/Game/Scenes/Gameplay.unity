@@ -183,6 +183,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Traveler2
       objectReference: {fileID: 0}
+    - target: {fileID: 6705750944458321483, guid: 0d6f77205fad5e04485ee254eb210caf, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6798880153003129681, guid: 0d6f77205fad5e04485ee254eb210caf, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.5
@@ -652,6 +656,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Traveler3
       objectReference: {fileID: 0}
+    - target: {fileID: 6705750944458321483, guid: 0d6f77205fad5e04485ee254eb210caf, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6798880153003129681, guid: 0d6f77205fad5e04485ee254eb210caf, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.45
@@ -817,6 +825,7 @@ GameObject:
   - component: {fileID: 1202024028}
   - component: {fileID: 1202024027}
   - component: {fileID: 1202024026}
+  - component: {fileID: 1202024029}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: MainCamera
@@ -891,13 +900,31 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1202024025}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.35355338, y: -0.3535534, z: 0.14644662, w: 0.8535535}
+  m_LocalPosition: {x: 8.5, y: 10.5, z: -7.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 45, y: -45, z: 0}
+--- !u!114 &1202024029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1202024025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d75abc5caee5453459393ce10fc44987, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultTraveler: {fileID: 1208236498}
+--- !u!4 &1208236498 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6798880153003129681, guid: 0d6f77205fad5e04485ee254eb210caf, type: 3}
+  m_PrefabInstance: {fileID: 1620056564166424431}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1601760100
 GameObject:
   m_ObjectHideFlags: 0
