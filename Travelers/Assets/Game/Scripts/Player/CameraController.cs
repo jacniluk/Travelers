@@ -3,15 +3,13 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
 	[Header("Settings")]
-	[SerializeField] private Transform defaultTraveler;
+	[SerializeField] private Vector3 positionOffset;
 
-	private Transform currentTraveler;
-	private Vector3 positionOffset;
+	public static CameraController Instance;
 
 	private void Awake()
 	{
-		currentTraveler = defaultTraveler;
-		positionOffset = transform.position - currentTraveler.position;
+		Instance = this;
 	}
 
 	private void FixedUpdate()
@@ -21,6 +19,6 @@ public class CameraController : MonoBehaviour
 
 	private void UpdatePosition()
 	{
-		transform.position = currentTraveler.position + positionOffset;
+		transform.position = TravelersManager.Instance.SelectedTravelerTransform.position + positionOffset;
 	}
 }

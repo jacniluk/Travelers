@@ -4,6 +4,9 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+	[Header("Settings")]
+	[SerializeField] private int defaultTravelerId;
+
 	public static GameManager Instance;
 
 	private void Awake()
@@ -20,6 +23,8 @@ public class GameManager : MonoBehaviour
 	{
 		MapManager.Instance.Initialize();
 		TravelersManager.Instance.Initialize();
+
+		HudManager.Instance.SetSelectedTraveler(defaultTravelerId);
 	}
 
 	public void RestartGame()

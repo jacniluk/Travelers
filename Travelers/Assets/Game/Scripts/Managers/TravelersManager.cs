@@ -13,6 +13,10 @@ public class TravelersManager : MonoBehaviour, IInitializable
 
 	public static TravelersManager Instance;
 
+	private TravelerController selectedTraveler;
+
+	public Transform SelectedTravelerTransform { get => selectedTraveler.transform; }
+
 	private void Awake()
 	{
 		Instance = this;
@@ -34,5 +38,20 @@ public class TravelersManager : MonoBehaviour, IInitializable
 		{
 			travelers[i].SetFactors(factorsSettings.DrawRandomSpeed(), factorsSettings.DrawRandomTurnSpeed());
 		}
+	}
+
+	public void SelectTraveler(int travelerId)
+	{
+		selectedTraveler?.SetTravelerSelected(false);
+		for (int i = 0; i < travelers.Count; i++)
+		{
+			if (travelers[i].TravelerId == travelerId)
+			{
+				selectedTraveler = travelers[i];
+
+				break;
+			}
+		}
+		selectedTraveler.SetTravelerSelected(true);
 	}
 }
