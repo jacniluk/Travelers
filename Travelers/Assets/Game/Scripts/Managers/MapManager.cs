@@ -8,10 +8,12 @@ public class MapManager : MonoBehaviour, IInitializable
 	[Header("Settings")]
 	[SerializeField] private int obstaclesAmount;
 	[SerializeField] private float middleFreeSpaceRadius;
+	[SerializeField] private float targetMarkerTime;
 
 	[Header("References")]
 	[SerializeField] private Transform mapRoot;
 	[SerializeField] private Transform ground;
+	[SerializeField] private GameObject targetMarker;
 
 	[Header("Assets")]
 	[SerializeField] private AssetReferenceGameObject obstacleAddressable;
@@ -88,5 +90,23 @@ public class MapManager : MonoBehaviour, IInitializable
 			Collider obstacle = Instantiate(obstaclePrefab, randomPosition, Utilities.RandomRotationY(), mapRoot).GetComponent<Collider>();
 			obstacles.Add(obstacle);
 		}
+	}
+
+	public void ShowTargetMarker(Vector3 target)
+	{
+		if (targetMarker.activeSelf)
+		{
+			CancelInvoke(nameof(HideTargetMarkerInvoke));
+		}
+
+		targetMarker.transform.position = target;
+		targetMarker.SetActive(true);
+
+		Invoke(nameof(HideTargetMarkerInvoke), targetMarkerTime);
+	}
+
+	private void HideTargetMarkerInvoke()
+	{
+		targetMarker.SetActive(false);
 	}
 }
