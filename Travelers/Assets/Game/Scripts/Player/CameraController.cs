@@ -12,7 +12,7 @@ public class CameraController : MonoBehaviour
 		Instance = this;
 	}
 
-	private void FixedUpdate()
+	private void LateUpdate()
 	{
 		UpdatePosition();
 	}

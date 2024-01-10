@@ -2032,6 +2032,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4b1a53986252584e86971208b09faf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startDelayAfterLeader: 0.1
+  stopDistanceFromLeader: 2
   travelers:
   - {fileID: 1620056564166424432}
   - {fileID: 271143543}

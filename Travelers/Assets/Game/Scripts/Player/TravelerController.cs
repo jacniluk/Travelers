@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class TravelerController : MonoBehaviour
@@ -10,10 +11,13 @@ public class TravelerController : MonoBehaviour
 
     private float speed;
     private float turnSpeed;
+	private IEnumerator moveToTargetCoroutine;
+	private float adjustedSpeed;
 
-    public float TravelerId { get => travelerId; }
+	public float TravelerId { get => travelerId; }
+	public float Speed { get => speed; }
 
-    public void SetFactors(float _speed, float _turnSpeed)
+	public void SetFactors(float _speed, float _turnSpeed)
     {
         speed = _speed;
         turnSpeed = _turnSpeed;
@@ -22,5 +26,59 @@ public class TravelerController : MonoBehaviour
     public void SetTravelerSelected(bool selected)
     {
 		highlight.SetActive(selected);
+	}
+
+	public void AdjustSpeed(float maxSpeed)
+	{
+		adjustedSpeed = maxSpeed > speed ? speed : maxSpeed;
+	}
+
+	public void MoveToTarget(Vector3 target)
+	{
+		if (moveToTargetCoroutine != null)
+		{
+			StopCoroutine(moveToTargetCoroutine);
+		}
+		moveToTargetCoroutine = MoveToTargetCoroutine(target);
+		StartCoroutine(moveToTargetCoroutine);
+	}
+
+	private IEnumerator MoveToTargetCoroutine(Vector3 target)
+	{
+		float rotationToTarget = Quaternion.LookRotation((target - transform.position).normalized).eulerAngles.y;
+		float offsetLeft = Utilities.AnglesDifference(transform.eulerAngles.y, rotationToTarget);
+		float turnDirection = offsetLeft > 0.0f ? 1.0f : -1.0f;
+		while (offsetLeft != 0.0f)
+		{
+			float offset = turnSpeed * Time.deltaTime * turnDirection;
+			offsetLeft -= offset;
+			if (turnDirection == 1.0f && offsetLeft < 0.0f || turnDirection == -1.0f && offsetLeft > 0.0f)
+			{
+				offsetLeft = 0.0f;
+				transform.eulerAngles = new Vector3(transform.eulerAngles.x, rotationToTarget, transform.eulerAngles.z);
+			}
+			else
+			{
+				transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y + offset, transform.eulerAngles.z);
+			}
+
+			yield return null;
+		}
+
+		while (transform.position != target)
+		{
+			Vector3 distance = target - transform.position;
+			Vector3 direction = distance.normalized;
+			Vector3 offset = adjustedSpeed * Time.deltaTime * direction;
+			if (offset.magnitude > distance.magnitude)
+			{
+				offset = distance;
+			}
+			transform.position += offset;
+
+			yield return null;
+		}
+
+		moveToTargetCoroutine = null;
 	}
 }

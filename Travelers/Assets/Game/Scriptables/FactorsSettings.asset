@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b883ab536551eb45a1d0d7b80d03050, type: 3}
   m_Name: FactorsSettings
   m_EditorClassIdentifier: 
-  minSpeed: 2
-  maxSpeed: 3
-  minTurnSpeed: 2
-  maxTurnSpeed: 3
+  minSpeed: 8
+  maxSpeed: 10
+  minTurnSpeed: 160
+  maxTurnSpeed: 200
