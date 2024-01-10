@@ -23,8 +23,16 @@ public class GameManager : MonoBehaviour
 
 	private void InitializeGame()
 	{
-		MapManager.Instance.Initialize();
-		TravelersManager.Instance.Initialize();
+		bool loadingGame = false;
+		if (SaveManager.ShouldLoadData)
+		{
+			loadingGame = SaveManager.Instance.LoadData();
+		}
+		if (loadingGame == false)
+		{
+			MapManager.Instance.Initialize();
+			TravelersManager.Instance.Initialize();
+		}
 
 		HudManager.Instance.SetSelectedTraveler(defaultTravelerId);
 	}

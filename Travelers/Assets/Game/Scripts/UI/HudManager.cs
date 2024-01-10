@@ -5,6 +5,7 @@ public class HudManager : MonoBehaviour
 {
 	[Header("References")]
 	[SerializeField] private List<TravelerSelecter> travelerSelecters;
+	[SerializeField] private GameObject loadButton;
 
 	public static HudManager Instance;
 
@@ -26,7 +27,17 @@ public class HudManager : MonoBehaviour
 		}
 	}
 
-    public void RestartGame()
+	public void SaveGame()
+	{
+		SaveManager.Instance.SaveGame();
+	}
+
+	public void LoadGame()
+	{
+		SaveManager.Instance.LoadGame();
+	}
+
+	public void RestartGame()
     {
 		GameManager.Instance.RestartGame();
 	}
@@ -34,5 +45,15 @@ public class HudManager : MonoBehaviour
     public void ExitGame()
     {
 		GameManager.Instance.ExitGame();
+	}
+
+	public void ShowLoadButton()
+	{
+		loadButton.SetActive(true);
+	}
+
+	public void HideLoadButton()
+	{
+		loadButton.SetActive(false);
 	}
 }
