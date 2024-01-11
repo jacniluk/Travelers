@@ -66,38 +66,47 @@ public class TravelerController : MonoBehaviour
 
 	private IEnumerator MoveToTargetCoroutine(Vector3 target)
 	{
-		float rotationToTarget = Quaternion.LookRotation((target - transform.position).normalized).eulerAngles.y;
-		float offsetLeft = Utilities.AnglesDifference(transform.eulerAngles.y, rotationToTarget);
-		float turnDirection = offsetLeft > 0.0f ? 1.0f : -1.0f;
-		while (offsetLeft != 0.0f)
+		List<Vector3> path = NavigationManager.Instance.FindPath(transform.position, target);
+
+		while (path.Count > 0)
 		{
-			float offset = turnSpeed * Time.deltaTime * turnDirection;
-			offsetLeft -= offset;
-			if (turnDirection == 1.0f && offsetLeft < 0.0f || turnDirection == -1.0f && offsetLeft > 0.0f)
+			target = path[0];
+
+			float rotationToTarget = Quaternion.LookRotation((target - transform.position).normalized).eulerAngles.y;
+			float offsetLeft = Utilities.AnglesDifference(transform.eulerAngles.y, rotationToTarget);
+			float turnDirection = offsetLeft > 0.0f ? 1.0f : -1.0f;
+			while (offsetLeft != 0.0f)
 			{
-				offsetLeft = 0.0f;
-				transform.eulerAngles = new Vector3(transform.eulerAngles.x, rotationToTarget, transform.eulerAngles.z);
-			}
-			else
-			{
-				transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y + offset, transform.eulerAngles.z);
+				float offset = turnSpeed * Time.deltaTime * turnDirection;
+				offsetLeft -= offset;
+				if (turnDirection == 1.0f && offsetLeft < 0.0f || turnDirection == -1.0f && offsetLeft > 0.0f)
+				{
+					offsetLeft = 0.0f;
+					transform.eulerAngles = new Vector3(transform.eulerAngles.x, rotationToTarget, transform.eulerAngles.z);
+				}
+				else
+				{
+					transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y + offset, transform.eulerAngles.z);
+				}
+
+				yield return null;
 			}
 
-			yield return null;
-		}
-
-		while (transform.position != target)
-		{
-			Vector3 distance = target - transform.position;
-			Vector3 direction = distance.normalized;
-			Vector3 offset = adjustedSpeed * Time.deltaTime * direction;
-			if (offset.magnitude > distance.magnitude)
+			while (transform.position != target)
 			{
-				offset = distance;
-			}
-			transform.position += offset;
+				Vector3 distance = target - transform.position;
+				Vector3 direction = distance.normalized;
+				Vector3 offset = adjustedSpeed * Time.deltaTime * direction;
+				if (offset.magnitude > distance.magnitude)
+				{
+					offset = distance;
+				}
+				transform.position += offset;
 
-			yield return null;
+				yield return null;
+			}
+
+			path.RemoveAt(0);
 		}
 
 		moveToTargetCoroutine = null;
