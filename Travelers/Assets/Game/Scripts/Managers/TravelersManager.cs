@@ -47,6 +47,33 @@ public class TravelersManager : MonoBehaviour, IInitializable
 		}
 	}
 
+	public void LoadTravelers(List<List<float>> travelersData)
+	{
+		for (int i = 0; i < travelersData.Count; i++)
+		{
+			for (int j = 0; j < travelers.Count; j++)
+			{
+				if (travelersData[i][0] == travelers[j].TravelerId)
+				{
+					travelers[j].LoadTraveler(travelersData[i]);
+
+					break;
+				}
+			}
+		}
+	}
+
+	public List<List<float>> GetTravelersData()
+	{
+		List<List<float>> travelersData = new List<List<float>>();
+		for (int i = 0; i < travelers.Count; i++)
+		{
+			travelersData.Add(travelers[i].GetTravelerData());
+		}
+
+		return travelersData;
+	}
+
 	public void SelectTraveler(int travelerId)
 	{
 		selectedTraveler?.SetTravelerSelected(false);

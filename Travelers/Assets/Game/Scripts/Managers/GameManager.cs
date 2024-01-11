@@ -21,20 +21,20 @@ public class GameManager : MonoBehaviour
 		InitializeGame();
 	}
 
-	private void InitializeGame()
+	private async void InitializeGame()
 	{
-		bool loadingGame = false;
+		HudManager.Instance.SetSelectedTraveler(defaultTravelerId);
+
+		bool gameLoaded = false;
 		if (SaveManager.ShouldLoadData)
 		{
-			loadingGame = SaveManager.Instance.LoadData();
+			gameLoaded = await SaveManager.Instance.LoadData();
 		}
-		if (loadingGame == false)
+		if (gameLoaded == false)
 		{
 			MapManager.Instance.Initialize();
 			TravelersManager.Instance.Initialize();
 		}
-
-		HudManager.Instance.SetSelectedTraveler(defaultTravelerId);
 	}
 
 	public void RestartGame()

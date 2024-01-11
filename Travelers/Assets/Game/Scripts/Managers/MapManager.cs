@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -38,10 +39,7 @@ public class MapManager : MonoBehaviour, IInitializable
 
 	private async void GenerateMap()
 	{
-		GameObject obstaclePrefab;
-		AsyncOperationHandle<GameObject> asyncOperationHandle = Addressables.LoadAssetAsync<GameObject>(obstacleAddressable);
-		await asyncOperationHandle.Task;
-		obstaclePrefab = asyncOperationHandle.Result;
+		GameObject obstaclePrefab = await LoadObstaclePrefab();
 
 		float obstacleSize = Mathf.Max(obstaclePrefab.transform.localScale.x, obstaclePrefab.transform.localScale.z);
 		float maxRangeX = (ground.localScale.x - obstacleSize) / 2.0f;
@@ -90,6 +88,47 @@ public class MapManager : MonoBehaviour, IInitializable
 			Collider obstacle = Instantiate(obstaclePrefab, randomPosition, Utilities.RandomRotationY(), mapRoot).GetComponent<Collider>();
 			obstacles.Add(obstacle);
 		}
+	}
+
+	public async void LoadMap(List<List<float>> obstaclesData)
+	{
+		GameObject obstaclePrefab = await LoadObstaclePrefab();
+
+		for (int i = 0; i < obstaclesData.Count; i++)
+		{
+			Collider obstacle = Instantiate(obstaclePrefab,
+				new Vector3(obstaclesData[i][0], obstaclePrefab.transform.position.y, obstaclesData[i][1]),
+				Quaternion.Euler(0.0f, obstaclesData[i][2], 0.0f),
+				mapRoot).GetComponent<Collider>();
+			obstacles.Add(obstacle);
+		}
+	}
+
+	private async Task<GameObject> LoadObstaclePrefab()
+	{
+		GameObject obstaclePrefab;
+		AsyncOperationHandle<GameObject> asyncOperationHandle = Addressables.LoadAssetAsync<GameObject>(obstacleAddressable);
+		await asyncOperationHandle.Task;
+		obstaclePrefab = asyncOperationHandle.Result;
+
+		return obstaclePrefab;
+	}
+
+	public List<List<float>> GetObstaclesData()
+	{
+		List<List<float>> obstaclesData = new List<List<float>>();
+		for (int i = 0; i < obstacles.Count; i++)
+		{
+			obstaclesData.Add(new List<float>
+				{
+					obstacles[i].transform.position.x,
+					obstacles[i].transform.position.z,
+					obstacles[i].transform.eulerAngles.y
+				}
+			);
+		}
+
+		return obstaclesData;
 	}
 
 	public void ShowTargetMarker(Vector3 target)

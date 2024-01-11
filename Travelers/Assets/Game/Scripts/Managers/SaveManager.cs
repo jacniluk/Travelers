@@ -1,4 +1,7 @@
+using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class SaveManager : MonoBehaviour
@@ -30,19 +33,29 @@ public class SaveManager : MonoBehaviour
 		}
 	}
 
-	public void SaveGame()
+	public async void SaveGame()
 	{
-		FileStream file;
-		if (File.Exists(path))
-		{
-			file = File.OpenWrite(path);
-		}
-		else
-		{
-			file = File.Create(path);
-		}
+		List<List<float>> obstaclesData = MapManager.Instance.GetObstaclesData();
+		List<List<float>> travelersData = TravelersManager.Instance.GetTravelersData();
+		SaveData saveData = new SaveData(obstaclesData, travelersData);
 
-		file.Close();
+		await Task.Run(() =>
+		{
+			FileStream file;
+			if (File.Exists(path))
+			{
+				file = File.OpenWrite(path);
+			}
+			else
+			{
+				file = File.Create(path);
+			}
+
+			BinaryFormatter binaryFormatter = new BinaryFormatter();
+			binaryFormatter.Serialize(file, saveData);
+
+			file.Close();
+		});
 
 		HudManager.Instance.ShowLoadButton();
 	}
@@ -56,35 +69,52 @@ public class SaveManager : MonoBehaviour
 		}
 		else
 		{
-			OnSaveFileMissing();
+			HudManager.Instance.HideLoadButton();
+
+			LogErrorSaveFileMissing();
 		}
 	}
 
-	public bool LoadData()
+	public async Task<bool> LoadData()
 	{
 		ShouldLoadData = false;
 
-		FileStream file;
-		if (File.Exists(path))
+		SaveData saveData = null;
+		bool loadFailed = false;
+		await Task.Run(() =>
 		{
-			file = File.OpenRead(path);
-		}
-		else
+			FileStream file;
+			if (File.Exists(path))
+			{
+				file = File.OpenRead(path);
+
+				BinaryFormatter binaryFormatter = new BinaryFormatter();
+				saveData = (SaveData)binaryFormatter.Deserialize(file);
+
+				file.Close();
+			}
+			else
+			{
+				loadFailed = true;
+
+				LogErrorSaveFileMissing();
+			}
+		});
+		if (loadFailed)
 		{
-			OnSaveFileMissing();
+			HudManager.Instance.HideLoadButton();
 
 			return false;
 		}
 
-		file.Close();
+		MapManager.Instance.LoadMap(saveData.obstaclesData);
+		TravelersManager.Instance.LoadTravelers(saveData.travelersData);
 
 		return true;
 	}
 
-	private void OnSaveFileMissing()
+	private void LogErrorSaveFileMissing()
 	{
-		HudManager.Instance.HideLoadButton();
-
 		Debug.LogError("Save file is missing.");
 	}
 }

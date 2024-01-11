@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TravelerController : MonoBehaviour
@@ -23,7 +24,27 @@ public class TravelerController : MonoBehaviour
         turnSpeed = _turnSpeed;
 	}
 
-    public void SetTravelerSelected(bool selected)
+	public void LoadTraveler(List<float> travelerData)
+	{
+		transform.position = new Vector3(travelerData[1], transform.position.y, travelerData[2]);
+		transform.eulerAngles = new Vector3(transform.eulerAngles.x, travelerData[3], transform.eulerAngles.z);
+		SetFactors(travelerData[4], travelerData[5]);
+	}
+
+	public List<float> GetTravelerData()
+	{
+		return new List<float>()
+		{
+			travelerId,
+			transform.position.x,
+			transform.position.z,
+			transform.eulerAngles.y,
+			speed,
+			turnSpeed
+		};
+	}
+
+	public void SetTravelerSelected(bool selected)
     {
 		highlight.SetActive(selected);
 	}
