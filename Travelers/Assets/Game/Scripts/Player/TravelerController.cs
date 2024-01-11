@@ -56,10 +56,6 @@ public class TravelerController : MonoBehaviour
 
 	public void MoveToTarget(Vector3 target)
 	{
-		if (moveToTargetCoroutine != null)
-		{
-			StopCoroutine(moveToTargetCoroutine);
-		}
 		moveToTargetCoroutine = MoveToTargetCoroutine(target);
 		StartCoroutine(moveToTargetCoroutine);
 	}
@@ -110,5 +106,14 @@ public class TravelerController : MonoBehaviour
 		}
 
 		moveToTargetCoroutine = null;
+	}
+
+	public void StopMoving()
+	{
+		if (moveToTargetCoroutine != null)
+		{
+			StopCoroutine(moveToTargetCoroutine);
+			moveToTargetCoroutine = null;
+		}
 	}
 }

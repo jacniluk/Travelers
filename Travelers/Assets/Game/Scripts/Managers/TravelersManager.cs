@@ -104,6 +104,7 @@ public class TravelersManager : MonoBehaviour, IInitializable
 	{
 		for (int i = 0; i < travelers.Count; i++)
 		{
+			travelers[i].StopMoving();
 			travelers[i].AdjustSpeed(selectedTraveler.Speed);
 		}
 
