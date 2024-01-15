@@ -218,7 +218,7 @@ PrefabInstance:
     - target: {fileID: 3589531569928695845, guid: 8ea778144c027ca4186abca5c50a85a8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1898610870}
     - target: {fileID: 3589531569928695845, guid: 8ea778144c027ca4186abca5c50a85a8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: LoadGame
@@ -935,7 +935,7 @@ PrefabInstance:
     - target: {fileID: 3589531569928695845, guid: 8ea778144c027ca4186abca5c50a85a8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1898610870}
     - target: {fileID: 3589531569928695845, guid: 8ea778144c027ca4186abca5c50a85a8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: RestartGame
@@ -1728,7 +1728,7 @@ PrefabInstance:
     - target: {fileID: 3589531569928695845, guid: 8ea778144c027ca4186abca5c50a85a8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1898610870}
     - target: {fileID: 3589531569928695845, guid: 8ea778144c027ca4186abca5c50a85a8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: SaveGame
@@ -2509,7 +2509,7 @@ PrefabInstance:
     - target: {fileID: 3589531569928695845, guid: 8ea778144c027ca4186abca5c50a85a8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1898610870}
     - target: {fileID: 3589531569928695845, guid: 8ea778144c027ca4186abca5c50a85a8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: ExitGame
