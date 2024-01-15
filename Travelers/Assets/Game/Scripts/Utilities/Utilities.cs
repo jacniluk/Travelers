@@ -17,20 +17,6 @@ public class Utilities
 
 		return difference;
 	}
-
-	public static float AngleToPoint(Transform transform, Vector3 point)
-	{
-		float angleRight = Vector3.Angle(transform.right, point - transform.position);
-		float angleLeft = Vector3.Angle(-transform.right, point - transform.position);
-		float direction = angleRight > angleLeft ? -1.0f : 1.0f;
-		float angle = Vector3.Angle(transform.forward, point - transform.position) * direction;
-		if (angle < 0.0f)
-		{
-			angle += 360.0f;
-		}
-
-		return angle;
-	}
 	#endregion
 
 	#region Layers
