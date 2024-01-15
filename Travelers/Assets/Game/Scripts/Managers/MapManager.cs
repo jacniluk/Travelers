@@ -21,14 +21,23 @@ public class MapManager : MonoBehaviour, IInitializable
 
 	public static MapManager Instance;
 
-	private const int MAX_TRIES = 100;
+	private const int PLACING_OBSTACLES_MAX_TRIES = 100;
 
+	private bool initialized;
+	private float mapBoundX;
+	private float mapBoundZ;
 	private List<Collider> obstacles;
+
+	public Transform Ground { get => ground; }
+
+	public bool Initialized => initialized;
 
 	private void Awake()
 	{
 		Instance = this;
 
+		mapBoundX = ground.localScale.x / 2.0f;
+		mapBoundZ = ground.localScale.z / 2.0f;
 		obstacles = new List<Collider>();
 	}
 
@@ -74,20 +83,29 @@ public class MapManager : MonoBehaviour, IInitializable
 				else
 				{
 					tries++;
-					if (tries >= MAX_TRIES)
+					if (tries >= PLACING_OBSTACLES_MAX_TRIES)
 					{
 #if UNITY_EDITOR
 						Debug.Log("Cannot create more obstacles. Stuck after " + obstacles.Count + ".");
 #endif
 
-						return;
+						break;
 					}	
 				}
 			}
 
-			Collider obstacle = Instantiate(obstaclePrefab, randomPosition, Utilities.RandomRotationY(), mapRoot).GetComponent<Collider>();
-			obstacles.Add(obstacle);
+			if (foundRandomPosition)
+			{
+				Collider obstacle = Instantiate(obstaclePrefab, randomPosition, Utilities.RandomRotationY(), mapRoot).GetComponent<Collider>();
+				obstacles.Add(obstacle);
+			}
+			else
+			{
+				break;
+			}
 		}
+
+		initialized = true;
 	}
 
 	public async void LoadMap(List<List<float>> obstaclesData)
@@ -102,6 +120,8 @@ public class MapManager : MonoBehaviour, IInitializable
 				mapRoot).GetComponent<Collider>();
 			obstacles.Add(obstacle);
 		}
+
+		initialized = true;
 	}
 
 	private async Task<GameObject> LoadObstaclePrefab()
@@ -147,5 +167,10 @@ public class MapManager : MonoBehaviour, IInitializable
 	private void HideTargetMarkerInvoke()
 	{
 		targetMarker.SetActive(false);
+	}
+
+	public bool IsPointInsideMap(Vector3 point)
+	{
+		return point.x > -mapBoundX && point.x < mapBoundX && point.z > -mapBoundZ && point.z < mapBoundZ;
 	}
 }

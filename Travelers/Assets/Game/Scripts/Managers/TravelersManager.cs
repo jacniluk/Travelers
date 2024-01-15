@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -7,8 +6,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 public class TravelersManager : MonoBehaviour, IInitializable
 {
 	[Header("Settings")]
-	[SerializeField] private float startDelayAfterLeader;
-	[SerializeField] private float stopDistanceFromLeader;
+	[SerializeField] private float followersStartDelay;
 
 	[Header("References")]
 	[SerializeField] private List<TravelerController> travelers;
@@ -18,11 +16,14 @@ public class TravelersManager : MonoBehaviour, IInitializable
 
 	public static TravelersManager Instance;
 
-	private TravelerController selectedTraveler;
-	private Vector3 target;
-	private IEnumerator moveToTargetCoroutine;
+	private const int SEARCHING_OWN_TARGET_MAX_TRIES = 100;
 
-	public Transform SelectedTravelerTransform { get => selectedTraveler.transform; }
+	private bool initialized;
+	private TravelerController selectedTraveler;
+
+	public TravelerController SelectedTraveler { get => selectedTraveler; }
+
+	public bool Initialized => initialized;
 
 	private void Awake()
 	{
@@ -45,6 +46,8 @@ public class TravelersManager : MonoBehaviour, IInitializable
 		{
 			travelers[i].SetFactors(factorsSettings.DrawRandomSpeed(), factorsSettings.DrawRandomTurnSpeed());
 		}
+
+		initialized = true;
 	}
 
 	public void LoadTravelers(List<List<float>> travelersData)
@@ -61,6 +64,8 @@ public class TravelersManager : MonoBehaviour, IInitializable
 				}
 			}
 		}
+
+		initialized = true;
 	}
 
 	public List<List<float>> GetTravelersData()
@@ -89,18 +94,7 @@ public class TravelersManager : MonoBehaviour, IInitializable
 		selectedTraveler.SetTravelerSelected(true);
 	}
 
-	public void MoveToTarget(Vector3 _target)
-	{
-		if (moveToTargetCoroutine != null)
-		{
-			StopCoroutine(moveToTargetCoroutine);
-		}
-		target = _target;
-		moveToTargetCoroutine = MoveToTargetCoroutine();
-		StartCoroutine(moveToTargetCoroutine);
-	}
-
-	private IEnumerator MoveToTargetCoroutine()
+	public void MoveToTarget(Vector3 target)
 	{
 		for (int i = 0; i < travelers.Count; i++)
 		{
@@ -108,36 +102,68 @@ public class TravelersManager : MonoBehaviour, IInitializable
 			travelers[i].AdjustSpeed(selectedTraveler.Speed);
 		}
 
-		selectedTraveler.MoveToTarget(target);
-
-		yield return new WaitUntil(() => IsLeaderClosestToTarget());
-		yield return new WaitForSeconds(startDelayAfterLeader);
-
-		for (int i = 0; i < travelers.Count; i++)
+		List<TravelerController> followers = new List<TravelerController>();
+		followers.AddRange(travelers);
+		followers.Remove(selectedTraveler);
+		for (int i = 1; i < followers.Count; i++)
 		{
-			if (travelers[i] == selectedTraveler) continue;
-
-			Vector3 direction = Quaternion.AngleAxis(Utilities.RandomAngle(), Vector3.up) * Vector3.forward;
-			Vector3 commonTarget = target + direction * stopDistanceFromLeader;
-			travelers[i].MoveToTarget(commonTarget);
-		}
-
-		moveToTargetCoroutine = null;
-	}
-
-	private bool IsLeaderClosestToTarget()
-	{
-		float leaderDistance = Vector3.Distance(selectedTraveler.transform.position, target);
-		for (int i = 0; i < travelers.Count; i++)
-		{
-			if (travelers[i] == selectedTraveler) continue;
-
-			if (Vector3.Distance(travelers[i].transform.position, target) <= leaderDistance)
+			for (int j = 0; j < i; j++)
 			{
-				return false;
+				if (followers[i].Speed > followers[j].Speed)
+				{
+					TravelerController temp = followers[i];
+					followers.RemoveAt(i);
+					followers.Insert(j, temp);
+					break;
+				}
 			}
 		}
 
-		return true;
+		List<Vector3> leaderPath = NavigationManager.Instance.FindPath(selectedTraveler.transform.position, target);
+		selectedTraveler.MoveToTarget(leaderPath);
+
+		for (int i = 0; i < followers.Count; i++)
+		{
+			List<Vector3> path = new List<Vector3>();
+			for (int j = 0; j < leaderPath.Count; j++)
+			{
+				if (Vector3.Distance(leaderPath[j], target) < Vector3.Distance(followers[i].transform.position, target))
+				{
+					path = NavigationManager.Instance.FindPath(followers[i].transform.position, leaderPath[j]);
+					if (j + 1 < leaderPath.Count)
+					{
+						path.AddRange(leaderPath.GetRange(j + 1, leaderPath.Count - j - 1));
+					}
+
+					break;
+				}
+			}
+			int tries = 0;
+			while (tries < SEARCHING_OWN_TARGET_MAX_TRIES)
+			{
+				Vector3 direction = Quaternion.AngleAxis(Utilities.RandomAngle(), Vector3.up) * Vector3.forward;
+				Vector3 ownTarget = target + direction * 2.0f;
+				if (NavigationManager.Instance.CanBeTarget(ownTarget) && MapManager.Instance.IsPointInsideMap(ownTarget))
+				{
+					Vector3 startToOwnTarget = path.Count > 1 ? path[^2] : followers[i].transform.position;
+					List<Vector3> pathToOwnTarget = NavigationManager.Instance.FindPath(startToOwnTarget, ownTarget);
+					if (pathToOwnTarget.Count > 3)
+					{
+						tries++;
+
+						continue;
+					}
+					path.RemoveAt(path.Count - 1);
+					path.AddRange(pathToOwnTarget);
+
+					break;
+				}
+				else
+				{
+					tries++;
+				}
+			}
+			followers[i].MoveToTarget(path, (i + 1) * followersStartDelay);
+		}
 	}
 }

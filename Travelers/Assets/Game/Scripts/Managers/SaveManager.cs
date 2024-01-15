@@ -69,43 +69,28 @@ public class SaveManager : MonoBehaviour
 		}
 		else
 		{
-			HudManager.Instance.HideLoadButton();
-
-			LogErrorSaveFileMissing();
+			OnSaveFileMissing();
 		}
 	}
 
-	public async Task<bool> LoadData()
+	public bool LoadData()
 	{
 		ShouldLoadData = false;
 
-		SaveData saveData = null;
-		bool loadFailed = false;
-		await Task.Run(() =>
+		FileStream file;
+		if (File.Exists(path) == false)
 		{
-			FileStream file;
-			if (File.Exists(path))
-			{
-				file = File.OpenRead(path);
-
-				BinaryFormatter binaryFormatter = new BinaryFormatter();
-				saveData = (SaveData)binaryFormatter.Deserialize(file);
-
-				file.Close();
-			}
-			else
-			{
-				loadFailed = true;
-
-				LogErrorSaveFileMissing();
-			}
-		});
-		if (loadFailed)
-		{
-			HudManager.Instance.HideLoadButton();
+			OnSaveFileMissing();
 
 			return false;
 		}
+
+		file = File.OpenRead(path);
+
+		BinaryFormatter binaryFormatter = new BinaryFormatter();
+		SaveData saveData = (SaveData)binaryFormatter.Deserialize(file);
+
+		file.Close();
 
 		MapManager.Instance.LoadMap(saveData.obstaclesData);
 		TravelersManager.Instance.LoadTravelers(saveData.travelersData);
@@ -113,8 +98,10 @@ public class SaveManager : MonoBehaviour
 		return true;
 	}
 
-	private void LogErrorSaveFileMissing()
+	private void OnSaveFileMissing()
 	{
+		HudManager.Instance.HideLoadButton();
+
 		Debug.LogError("Save file is missing.");
 	}
 }

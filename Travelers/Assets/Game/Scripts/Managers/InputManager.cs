@@ -23,8 +23,11 @@ public class InputManager : MonoBehaviour
 				{
 					if (Utilities.CompareLayers(raycastHit.transform.gameObject.layer, groundLayerMask))
 					{
-						TravelersManager.Instance.MoveToTarget(raycastHit.point);
-						MapManager.Instance.ShowTargetMarker(raycastHit.point);
+						if (NavigationManager.Instance.CanBeTarget(raycastHit.point))
+						{
+							TravelersManager.Instance.MoveToTarget(raycastHit.point);
+							MapManager.Instance.ShowTargetMarker(raycastHit.point);
+						}
 					}
 				}
 			}

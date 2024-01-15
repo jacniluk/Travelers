@@ -12,6 +12,7 @@ public class TravelerController : MonoBehaviour
 
     private float speed;
     private float turnSpeed;
+	private List<Vector3> path;
 	private IEnumerator moveToTargetCoroutine;
 	private float adjustedSpeed;
 
@@ -54,19 +55,24 @@ public class TravelerController : MonoBehaviour
 		adjustedSpeed = maxSpeed > speed ? speed : maxSpeed;
 	}
 
-	public void MoveToTarget(Vector3 target)
+	public void MoveToTarget(List<Vector3> _path, float delay = 0.0f)
 	{
-		moveToTargetCoroutine = MoveToTargetCoroutine(target);
+		path = _path;
+		moveToTargetCoroutine = MoveToTargetCoroutine(delay);
 		StartCoroutine(moveToTargetCoroutine);
 	}
 
-	private IEnumerator MoveToTargetCoroutine(Vector3 target)
+	private IEnumerator MoveToTargetCoroutine(float delay)
 	{
-		List<Vector3> path = NavigationManager.Instance.FindPath(transform.position, target);
+		if (delay != 0.0f)
+		{
+			yield return new WaitUntil(() => TravelersManager.Instance.SelectedTraveler.transform.position == TravelersManager.Instance.SelectedTraveler.path[0]);
+			yield return new WaitForSeconds(delay);
+		}
 
 		while (path.Count > 0)
 		{
-			target = path[0];
+			Vector3 target = path[0];
 
 			float rotationToTarget = Quaternion.LookRotation((target - transform.position).normalized).eulerAngles.y;
 			float offsetLeft = Utilities.AnglesDifference(transform.eulerAngles.y, rotationToTarget);

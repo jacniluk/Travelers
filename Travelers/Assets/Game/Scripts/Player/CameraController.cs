@@ -19,6 +19,6 @@ public class CameraController : MonoBehaviour
 
 	private void UpdatePosition()
 	{
-		transform.position = TravelersManager.Instance.SelectedTravelerTransform.position + positionOffset;
+		transform.position = TravelersManager.Instance.SelectedTraveler.transform.position + positionOffset;
 	}
 }
